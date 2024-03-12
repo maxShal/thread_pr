@@ -20,7 +20,10 @@ public class CollSyn implements Runnable
         list.add(num);
         System.out.println("Added: "+num);
     }
-
+    public int size()
+    {
+        return list.size();
+    }
     public void remove()
     {
         int num=(int) (Math.random()* list.size());
@@ -29,25 +32,34 @@ public class CollSyn implements Runnable
     }
     @Override
     public void run() {
-        List<Integer> synList = Collections.synchronizedList(list);
-        CollSyn collist=new CollSyn(synList,flag);
-        if(flag ==0)
+       // List<Integer> synList = Collections.synchronizedList(new ArrayList<>());
+        CollSyn collSyn=new CollSyn(list,flag);
+        if(flag==0)
         {
-            for(int i=0;i<100;i++)
+            for(int i=0;i<10;i++)
             {
-                collist.add();
-            }
-        }
-        //if
-        if(!list.isEmpty())
-        {
-            for(int i=0;i<100;i++) {
-                while (!list.isEmpty()){
-                    collist.remove();
+                collSyn.add();
+                synchronized (list)
+                {
+                    list.notify();
                 }
             }
+        }else {
+            for(int i=0;i<10;i++)
+            {
+                if(collSyn.size()==0)
+                {
+                    synchronized (list)
+                    {
+                        try {
+                            list.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+                collSyn.remove();
+            }
         }
-
-
     }
 }
