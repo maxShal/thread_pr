@@ -15,6 +15,7 @@ public class num6 {
         t1.join();
         t2.join();
 
+
     }
 
 }
