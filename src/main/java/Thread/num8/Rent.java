@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Rent implements Runnable
-{
+public class Rent implements Runnable {
     private final ReentrantLock lock;
     private final Condition condition;
 
@@ -16,56 +15,48 @@ public class Rent implements Runnable
 
     public Rent(List<Integer> list, int flag, Condition condition, ReentrantLock lock) {
         this.list = list;
-        this.flag =flag;
-        this.condition=condition;
-        this.lock=lock;
+        this.flag = flag;
+        this.condition = condition;
+        this.lock = lock;
     }
 
-    public void add()
-    {
+    public void add() {
 
-        int num=(int) (Math.random()*10);
+        int num = (int) (Math.random() * 10);
         lock.lock();
-        try
-        {
+        try {
             list.add(num);
-            System.out.println("Added: "+num);
+            System.out.println("Added: " + num);
             condition.signal();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
 
-    public  void remove()
-    {
-        int num=(int) (Math.random()* list.size());
+    public void remove() {
+        int num = (int) (Math.random() * list.size());
         lock.lock();
-        try
-        {
-            if(list.isEmpty())
-            {
+        try {
+            if (list.isEmpty()) {
                 condition.await();
             }
             list.remove(num);
-            System.out.println("Removed: "+num);
+            System.out.println("Removed: " + num);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }finally {
+        } finally {
             lock.unlock();
         }
     }
+
     @Override
-    public void run()
-    {
-        if(flag==0)
-        {
-            for(int i=0;i<10;i++) {
+    public void run() {
+        if (flag == 0) {
+            for (int i = 0; i < 10; i++) {
                 add();
             }
-
-        }else
-        {
-            for(int i=0;i<10;i++) {
+        } else {
+            for (int i = 0; i < 10; i++) {
                 remove();
             }
         }
